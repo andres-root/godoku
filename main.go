@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	cols string = "123456789"
@@ -141,23 +144,24 @@ func getPeers(boxes []string, units map[string][][]string) map[string][]string {
 	return peers
 }
 
-// func elimitate(values map[string]string) map[string]string {
-// 	//
-// 	var solvedBoxes []string
-// 	for k, v := range values {
-// 		if len(v) == 1 {
-// 			solvedBoxes = append(solvedBoxes, k)
-// 		}
-// 	}
+func elimitate(gridValues map[string]string, peers map[string][]string) map[string]string {
+	//
+	var solvedBoxes []string
+	for k, v := range gridValues {
+		if len(v) == 1 {
+			solvedBoxes = append(solvedBoxes, k)
+		}
+	}
 
-// 	for _, box := range solvedBoxes {
-// 		n := box
-// 		// for k, v := range values
+	for _, box := range solvedBoxes {
+		digit := gridValues[string(box)]
+		for _, peer := range peers[string(box)] {
+			gridValues[peer] = strings.Replace(gridValues[peer], digit, "", -1)
+		}
+	}
 
-// 	}
-
-// 	return values
-// }
+	return gridValues
+}
 
 func main() {
 	var unitList [][]string
@@ -168,12 +172,13 @@ func main() {
 	squareUnits := getSquareUnits()
 	unitList = append(rowUnits, columnUnits...)
 	unitList = append(unitList, squareUnits...)
-	// gridValues := getGridValues(boxes)
+	gridValues := getGridValues(boxes)
 	units := getUnits(unitList, boxes)
 	// peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 	peers := getPeers(boxes, units)
+	solved := elimitate(gridValues, peers)
 	fmt.Println("---------------------------")
-	fmt.Println(peers)
+	fmt.Println(solved)
 	// fmt.Println(gridValues)
 	// fmt.Println(rowUnits)
 	// fmt.Println(units["A1"])
