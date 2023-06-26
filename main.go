@@ -110,18 +110,15 @@ func getUnits(unitlist [][]string, boxes []string) map[string][][]string {
 			}
 		}
 		units[box] = tempList
-		if box == "A1" {
-			break
-		}
 	}
 	return units
 }
 
-func getPeers(boxes []string, units map[string][][]string) map[string]map[string]bool {
+func getPeers(boxes []string, units map[string][][]string) map[string][]string {
 	// peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
-	var peers = make(map[string]map[string]bool)
+	var mappedPeers = make(map[string]map[string]bool)
 	for _, box := range boxes {
-		var tempMap = make(map[string]bool)
+		tempMap := make(map[string]bool) // create a new map for each box
 		for _, unit := range units[box] {
 			for _, unitBox := range unit {
 				if unitBox != box {
@@ -129,7 +126,16 @@ func getPeers(boxes []string, units map[string][][]string) map[string]map[string
 				}
 			}
 		}
-		peers[box] = tempMap
+		mappedPeers[box] = tempMap // store it in the outer map
+	}
+
+	var peers = make(map[string][]string)
+	for _, box := range boxes {
+		var keys []string
+		for key := range mappedPeers[box] {
+			keys = append(keys, key)
+		}
+		peers[box] = keys
 	}
 
 	return peers
@@ -167,7 +173,7 @@ func main() {
 	// peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 	peers := getPeers(boxes, units)
 	fmt.Println("---------------------------")
-	fmt.Println(peers["A1"])
+	fmt.Println(peers)
 	// fmt.Println(gridValues)
 	// fmt.Println(rowUnits)
 	// fmt.Println(units["A1"])
