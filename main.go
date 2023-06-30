@@ -179,7 +179,7 @@ func onlyChoice(gridValues map[string]string, unitlist [][]string) map[string]st
 	return gridValues
 }
 
-func reducePuzzle(gridValues map[string]string, unitlist [][]string, peers map[string][]string) map[string]string, bool {
+func reducePuzzle(gridValues map[string]string, unitlist [][]string, peers map[string][]string) (map[string]string, bool) {
 	stalled := false
 	for !stalled {
 		solved_values_before_reduce := make([]string, 0)
@@ -224,7 +224,7 @@ func main() {
 	units := getUnits(unitList, boxes)
 	peers := getPeers(boxes, units)
 	// Reduce Puzzle
-	gridValues, solved = reducePuzzle(gridValues, unitList, peers)
+	gridValues, solved := reducePuzzle(gridValues, unitList, peers)
 	fmt.Println("---------------------------")
 	fmt.Println(gridValues, solved)
 	fmt.Println("---------------------------")
