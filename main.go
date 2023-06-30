@@ -145,7 +145,6 @@ func getPeers(boxes []string, units map[string][][]string) map[string][]string {
 }
 
 func elimitate(gridValues map[string]string, peers map[string][]string) map[string]string {
-	//
 	var solvedBoxes []string
 	for k, v := range gridValues {
 		if len(v) == 1 {
@@ -180,6 +179,38 @@ func onlyChoice(gridValues map[string]string, unitlist [][]string) map[string]st
 	return gridValues
 }
 
+func reducePuzzle(gridValues map[string]string, unitlist [][]string, peers map[string][]string) map[string]string, bool {
+	stalled := false
+	for !stalled {
+		solved_values_before_reduce := make([]string, 0)
+		for _, box := range gridValues {
+			if len(box) == 1 {
+				solved_values_before_reduce = append(solved_values_before_reduce, box)
+			}
+		}
+
+		gridValues = elimitate(gridValues, peers)
+		gridValues = onlyChoice(gridValues, unitlist)
+
+		solved_values_after_reduce := make([]string, 0)
+		for _, box := range gridValues {
+			if len(box) == 1 {
+				solved_values_after_reduce = append(solved_values_after_reduce, box)
+			}
+		}
+
+		stalled = len(solved_values_before_reduce) == len(solved_values_after_reduce)
+
+		// If there is a box with zero available values, the puzzle is unsolvable
+		for _, box := range gridValues {
+			if len(box) == 0 {
+				return gridValues, false
+			}
+		}
+	}
+	return gridValues, true
+}
+
 func main() {
 	var unitList [][]string
 
@@ -192,9 +223,9 @@ func main() {
 	gridValues := getGridValues(boxes)
 	units := getUnits(unitList, boxes)
 	peers := getPeers(boxes, units)
-	gridValues = elimitate(gridValues, peers)
+	// Reduce Puzzle
+	gridValues, solved = reducePuzzle(gridValues, unitList, peers)
 	fmt.Println("---------------------------")
-	gridValues = onlyChoice(gridValues, unitList)
-	fmt.Println(gridValues)
+	fmt.Println(gridValues, solved)
 	fmt.Println("---------------------------")
 }
