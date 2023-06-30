@@ -163,6 +163,23 @@ func elimitate(gridValues map[string]string, peers map[string][]string) map[stri
 	return gridValues
 }
 
+func onlyChoice(gridValues map[string]string, unitlist [][]string) map[string]string {
+	for _, unit := range unitlist {
+		for _, digit := range cols {
+			dplaces := make([]string, 0)
+			for _, box := range unit {
+				if strings.Contains(gridValues[box], string(digit)) {
+					dplaces = append(dplaces, box)
+				}
+			}
+			if len(dplaces) == 1 {
+				gridValues[dplaces[0]] = string(digit)
+			}
+		}
+	}
+	return gridValues
+}
+
 func main() {
 	var unitList [][]string
 
@@ -174,13 +191,10 @@ func main() {
 	unitList = append(unitList, squareUnits...)
 	gridValues := getGridValues(boxes)
 	units := getUnits(unitList, boxes)
-	// peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 	peers := getPeers(boxes, units)
-	solved := elimitate(gridValues, peers)
+	gridValues = elimitate(gridValues, peers)
 	fmt.Println("---------------------------")
-	fmt.Println(solved)
-	// fmt.Println(gridValues)
-	// fmt.Println(rowUnits)
-	// fmt.Println(units["A1"])
-	// fmt.Println(len(units["A1"]))
+	gridValues = onlyChoice(gridValues, unitList)
+	fmt.Println(gridValues)
+	fmt.Println("---------------------------")
 }
